@@ -40,50 +40,51 @@ void print_CircularList (struct CircularList *l) {
         if (iter == l->head)
             break;
     }
-    printf("...\n");
+    printf(" | END (loop) |\n");
 }
 
 void append_right (struct CircularList **l, struct ListElement *new) {
-    new->next = (*l)->ptr->next;
-    (*l)->ptr->next = new;
-    (*l)->ptr = new;
+    if ((*l)->head == NULL) {
+        (*l)->head = new;
+        (*l)->ptr = new;
+        new->next = new;
+    }
+    else {
+        new->next = (*l)->ptr->next;
+        (*l)->ptr->next = new;
+        (*l)->ptr = new;
+    }
 }
 
 int main() {
+    struct CircularList *l;
+    l = malloc(sizeof(struct CircularList));
+    l->head = NULL;
+    l->ptr = NULL;
+
+    printf("Begin:\n");
+    print_CircularList(l);
+
     struct ListElement *first;
     first = malloc(sizeof(struct ListElement));
     if (first == NULL) 
         allocfail;
     first->elem = 'A';
-    first->next = first;
+
+    append_right(&l, first);
+
+    printf("After first element:\n");
+    print_CircularList(l);
 
     struct ListElement *sec;
     sec = malloc(sizeof(struct ListElement));
     if (sec == NULL)
         allocfail;
     sec->elem = 'B';
-    sec->next = sec;
 
-    first->next = sec;
-    sec->next = first;
+    append_right(&l, sec);
 
-    struct CircularList *l;
-    l = malloc(sizeof(struct CircularList));
-    l->head = first;
-    l->ptr = sec;
-
-    printf("Before:\n");
-    print_CircularList(l);
-
-    struct ListElement *new;
-    new = malloc(sizeof(struct ListElement));
-    if (new == NULL)
-        allocfail;
-    new->elem = 'C';
-    new->next = new;
-
-    append_right(&l, new);
-    printf("After:\n");
+    printf("After second element:\n");
     print_CircularList(l);
 
     free_CircularList(l);
